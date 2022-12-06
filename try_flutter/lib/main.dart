@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-import 'package:intl/intl.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,55 +30,108 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late List<ChartSampleData> _chartData;
   late TooltipBehavior _tooltipBehavior;
-
   @override
   void initState() {
     _chartData = getChartData();
-    _tooltipBehavior = TooltipBehavior(enable: true);
+    _tooltipBehavior = TooltipBehavior(
+        tooltipPosition: TooltipPosition.auto,
+        enable: true,
+        opacity: 0,
+        builder: (data, point, series, pointIndex, seriesIndex) {
+          // return Column(
+          //   children: [
+          return Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              boxShadow: const [
+                BoxShadow(blurRadius: 18, color: Colors.black12),
+              ],
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              border: Border.all(
+                color: const Color(0xff00ACFF),
+                width: 0.5,
+              ),
+            ),
+            child: Text('₹${data.low} - ₹${data.high}'),
+          );
+          // Container(
+          //   height: 50,
+          //   width: 1,
+          //   color: const Color(0xff00ACFF),
+          // ),
+          // Container(
+          //   height: 25,
+          //   width: 25,
+          //   alignment: Alignment.center,
+          //   decoration: const BoxDecoration(
+          //     color: Colors.white,
+          //     shape: BoxShape.circle,
+          //   ),
+          //   child: Container(
+          //     height: 12,
+          //     width: 12,
+          //     decoration: const BoxDecoration(
+          //       color: Color(0xff00ACFF),
+          //       shape: BoxShape.circle,
+          //     ),
+          //   ),
+          // ),
+          // ],
+          // );
+        });
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Scaffold(
-      body: SfCartesianChart(
-        legend: Legend(isVisible: true),
-        tooltipBehavior: _tooltipBehavior,
-        title: ChartTitle(text: 'Average temperature variation of London, UK'),
-        series: <RangeColumnSeries>[
-          RangeColumnSeries<ChartSampleData, DateTime>(
+      child: Scaffold(
+        body: SfCartesianChart(
+          margin: const EdgeInsets.all(16),
+          selectionType: SelectionType.point,
+          tooltipBehavior: _tooltipBehavior,
+          title: ChartTitle(text: "Here's the chart"),
+          series: <RangeColumnSeries>[
+            RangeColumnSeries<ChartSampleData, String>(
+              color: const Color(0xff00ACFF),
+              borderRadius: BorderRadius.circular(8),
               dataSource: _chartData,
               xValueMapper: (ChartSampleData data, _) => data.x,
-              highValueMapper: (ChartSampleData data, _) => data.high,
-              lowValueMapper: (ChartSampleData data, _) => data.low,
-              dataLabelSettings: const DataLabelSettings(isVisible: true))
-        ],
-        primaryXAxis: DateTimeAxis(
-            edgeLabelPlacement: EdgeLabelPlacement.shift,
-            dateFormat: DateFormat.MMM(),
-            intervalType: DateTimeIntervalType.months,
-            majorGridLines: const MajorGridLines(width: 0)),
-        primaryYAxis: NumericAxis(labelFormat: '{value}°C'),
+              highValueMapper: (ChartSampleData data, _) => data.low / 100000,
+              lowValueMapper: (ChartSampleData data, _) => data.high / 100000,
+            ),
+          ],
+          primaryXAxis: CategoryAxis(
+            title: AxisTitle(text: 'min years - max years'),
+            majorGridLines: const MajorGridLines(width: 0),
+            majorTickLines: const MajorTickLines(width: 0),
+            axisLine: const AxisLine(width: 0)
+          ),
+          primaryYAxis: NumericAxis(
+            labelFormat: '{value} L',
+            majorGridLines: const MajorGridLines(width: 0.5),
+            majorTickLines: const MajorTickLines(width: 0),
+            axisLine: const AxisLine(width: 0)
+          ),
+        ),
       ),
-    ));
+    );
   }
 
   List<ChartSampleData> getChartData() {
     return <ChartSampleData>[
-      ChartSampleData(DateTime(2021, 1, 1), 3, 9),
-      ChartSampleData(DateTime(2021, 2, 1), 4, 11),
-      ChartSampleData(DateTime(2021, 3, 1), 6, 13),
-      ChartSampleData(DateTime(2021, 4, 1), 9, 17),
-      ChartSampleData(DateTime(2021, 5, 1), 12, 20),
-      ChartSampleData(DateTime(2021, 6, 1), 12, 20)
+      ChartSampleData('0-2', 500000, 1500000),
+      ChartSampleData('2-5', 700000, 1700000),
+      ChartSampleData('5-10', 1300000, 3500000),
+      ChartSampleData('10-25', 3000000, 6000000),
     ];
   }
 }
 
 class ChartSampleData {
-  ChartSampleData(this.x, this.high, this.low);
-  final DateTime x;
-  final double high;
-  final double low;
+  ChartSampleData(this.x, this.low, this.high);
+  final String x;
+  final int low;
+  final int high;
 }
