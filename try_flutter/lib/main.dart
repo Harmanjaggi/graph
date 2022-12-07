@@ -14,20 +14,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(title: 'Flutter Demo Home Page'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
-  _MyHomePageState createState() => _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   late List<ChartSampleData> _chartData;
   late TooltipBehavior _tooltipBehavior;
   @override
@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
         enable: true,
         opacity: 0,
         builder: (data, point, series, pointIndex, seriesIndex) {
+          print('₹${data.low} - ₹${data.high}');
           // return Column(
           //   children: [
           return Container(
@@ -88,6 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return SafeArea(
       child: Scaffold(
         body: SfCartesianChart(
+          plotAreaBorderWidth: 0,
           margin: const EdgeInsets.all(16),
           selectionType: SelectionType.point,
           tooltipBehavior: _tooltipBehavior,
@@ -103,16 +105,17 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
           primaryXAxis: CategoryAxis(
-            title: AxisTitle(text: 'min years - max years'),
+            title: AxisTitle(text: '← min years - max years →'),
             majorGridLines: const MajorGridLines(width: 0),
             majorTickLines: const MajorTickLines(width: 0),
-            axisLine: const AxisLine(width: 0)
+            axisLine: const AxisLine(width: 0),
           ),
           primaryYAxis: NumericAxis(
             labelFormat: '{value} L',
-            majorGridLines: const MajorGridLines(width: 0.5),
+            interval: 10,
+            majorGridLines: const MajorGridLines(width: 0.4),
             majorTickLines: const MajorTickLines(width: 0),
-            axisLine: const AxisLine(width: 0)
+            axisLine: const AxisLine(width: 0),
           ),
         ),
       ),
